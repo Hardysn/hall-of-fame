@@ -10,16 +10,16 @@
 
   <style>
     :root {
-      --bg-color: #0f0f12;
-      --card-bg: linear-gradient(145deg, #1e1e24, #2a2a35);
+      --bg-color: #0a0a0f;
       --accent-color: #ffca28;
       --text-color: #ffffff;
     }
 
     body {
       background-color: var(--bg-color);
+      background-image: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #0a0a0f 75%);
       color: var(--text-color);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       margin: 0;
       padding: 20px;
       display: flex;
@@ -30,44 +30,55 @@
 
     header {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 35px;
     }
 
     h1 {
-      color: var(--accent-color);
+      color: #fff;
+      font-size: 2.5rem;
       margin-bottom: 5px;
       text-transform: uppercase;
-      letter-spacing: 2px;
+      letter-spacing: 3px;
+      text-shadow: 0 0 15px rgba(255, 202, 40, 0.5);
+    }
+
+    .subtitle {
+      color: #8a8a9e;
+      font-size: 1rem;
+      margin-top: 0;
     }
 
     .btn-primary {
-      background-color: var(--accent-color);
+      background: linear-gradient(135deg, #ffca28, #f57c00);
       color: #000;
       border: none;
-      padding: 10px 20px;
-      font-weight: bold;
-      border-radius: 8px;
+      padding: 12px 24px;
+      font-weight: 800;
+      border-radius: 30px;
       cursor: pointer;
-      transition: transform 0.2s;
-      margin-top: 10px;
+      box-shadow: 0 4px 15px rgba(255, 202, 40, 0.4);
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
     .btn-primary:hover {
-      transform: scale(1.05);
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 6px 20px rgba(255, 202, 40, 0.6);
     }
 
     .cards-grid {
       display: flex;
       flex-wrap: wrap;
-      gap: 30px;
+      gap: 35px;
       justify-content: center;
       max-width: 1200px;
       width: 100%;
     }
 
     .card-container {
-      width: 290px;
-      height: 450px;
+      width: 300px;
+      height: 470px;
       perspective: 1000px;
     }
 
@@ -76,9 +87,8 @@
       height: 100%;
       position: relative;
       transform-style: preserve-3d;
-      transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+      transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      border-radius: 20px;
     }
 
     .card.flipped {
@@ -90,95 +100,122 @@
       width: 100%;
       height: 100%;
       backface-visibility: hidden;
-      border-radius: 16px;
+      border-radius: 20px;
       box-sizing: border-box;
-      padding: 20px;
+      padding: 22px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
-      border: 2px solid #333;
-      background: var(--card-bg);
+      background: #14141d;
+      /* Color dinámico del Campeón */
+      border: 2px solid var(--theme-color, #ffca28);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 15px var(--theme-glow, rgba(255,202,40,0.3));
     }
 
     .game-title {
-      font-size: 1.3rem;
-      font-weight: bold;
+      font-size: 1.4rem;
+      font-weight: 900;
       text-transform: uppercase;
-      color: var(--accent-color);
+      color: var(--theme-color, #ffca28);
       margin: 0;
       text-align: center;
+      text-shadow: 0 0 10px var(--theme-glow, rgba(255,202,40,0.4));
+      letter-spacing: 1px;
     }
 
     .trophy-container {
-      width: 140px;
-      height: 140px;
+      width: 150px;
+      height: 150px;
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
+      position: relative;
     }
 
     .trophy-img {
       max-width: 100%;
       max-height: 100%;
       object-fit: contain;
+      filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+      transition: transform 0.3s ease;
+    }
+
+    .trophy-container:hover .trophy-img {
+      transform: scale(1.08) rotate(-3deg);
     }
 
     .champion-box {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--accent-color);
-      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--theme-color, #ffca28);
+      border-radius: 12px;
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       text-align: center;
       box-sizing: border-box;
+      backdrop-filter: blur(5px);
+      box-shadow: inset 0 0 10px var(--theme-glow, rgba(255,202,40,0.1));
     }
 
     .champion-label {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       text-transform: uppercase;
       color: #aaa;
+      letter-spacing: 1.5px;
+      font-weight: 700;
     }
 
     .champion-name {
-      font-size: 1.2rem;
-      font-weight: bold;
+      font-size: 1.3rem;
+      font-weight: 900;
       color: #fff;
       margin-top: 4px;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.8);
     }
 
     .card-actions {
       display: flex;
-      gap: 8px;
+      gap: 10px;
       width: 100%;
     }
 
     .btn-action {
       flex: 1;
-      padding: 8px 5px;
-      font-size: 0.8rem;
-      font-weight: bold;
+      padding: 10px 5px;
+      font-size: 0.85rem;
+      font-weight: 800;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
       text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.2s ease;
     }
 
     .btn-win {
-      background-color: #2e7d32;
-      color: #fff;
+      background: var(--theme-color, #ffca28);
+      color: #000;
+      box-shadow: 0 4px 10px var(--theme-glow, rgba(255,202,40,0.3));
     }
 
     .btn-win:hover {
-      background-color: #388e3c;
+      transform: translateY(-2px);
+      filter: brightness(1.15);
     }
 
     .btn-flip {
-      background-color: #444;
+      background: rgba(255, 255, 255, 0.1);
       color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
+    .btn-flip:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* REVERSO */
     .card-back {
       transform: rotateY(180deg);
       align-items: flex-start;
@@ -186,13 +223,16 @@
     }
 
     .back-title {
-      font-size: 1rem;
-      color: var(--accent-color);
-      border-bottom: 1px solid #444;
+      font-size: 0.9rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--theme-color, #ffca28);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
       width: 100%;
-      padding-bottom: 4px;
-      margin-top: 10px;
-      margin-bottom: 8px;
+      padding-bottom: 6px;
+      margin-top: 8px;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
     }
 
     .stats-list {
@@ -205,24 +245,30 @@
     .stats-item {
       display: flex;
       justify-content: space-between;
-      padding: 4px 0;
+      padding: 6px 0;
       font-size: 0.85rem;
-      border-bottom: 1px dotted #333;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .stats-item:first-child {
+      color: var(--theme-color, #ffca28);
+      font-weight: bold;
     }
 
     .records-box {
       width: 100%;
-      background: rgba(0,0,0,0.3);
-      padding: 8px;
-      border-radius: 6px;
+      background: rgba(0,0,0,0.4);
+      padding: 10px;
+      border-radius: 8px;
       box-sizing: border-box;
-      margin-bottom: 10px;
+      border-left: 3px solid var(--theme-color, #ffca28);
     }
 
     .record-text {
       font-size: 0.8rem;
       color: #ddd;
-      margin: 3px 0;
+      margin: 0;
+      line-height: 1.4;
     }
 
     /* Modal / Formulario */
@@ -230,64 +276,78 @@
       display: none;
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(8px);
       justify-content: center;
       align-items: center;
       z-index: 100;
     }
 
     .modal-content {
-      background: #1e1e24;
-      padding: 25px;
-      border-radius: 12px;
+      background: #14141d;
+      padding: 30px;
+      border-radius: 16px;
       width: 90%;
       max-width: 400px;
-      border: 1px solid var(--accent-color);
+      border: 1px solid #333;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.9);
     }
 
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 18px;
     }
 
     .form-group label {
       display: block;
-      font-size: 0.85rem;
-      margin-bottom: 5px;
+      font-size: 0.8rem;
+      margin-bottom: 6px;
       color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
     }
 
-    .form-group input, .form-group textarea, .form-group select {
+    .form-group input, .form-group textarea {
       width: 100%;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #444;
-      background: #0f0f12;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      background: #0a0a0f;
       color: #fff;
       box-sizing: border-box;
+      font-size: 0.9rem;
+    }
+
+    .color-picker-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .color-picker-wrapper input[type="color"] {
+      width: 45px;
+      height: 45px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: transparent;
     }
 
     .modal-actions {
       display: flex;
       justify-content: flex-end;
       gap: 10px;
+      margin-top: 20px;
     }
 
     .btn-secondary {
-      background: #444;
+      background: #333;
       color: #fff;
       border: none;
-      padding: 8px 15px;
-      border-radius: 6px;
+      padding: 10px 18px;
+      border-radius: 8px;
       cursor: pointer;
-    }
-
-    .btn-danger {
-      background: #c62828;
-      color: #fff;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 6px;
-      cursor: pointer;
+      font-weight: 700;
     }
   </style>
 </head>
@@ -295,7 +355,7 @@
 
   <header>
     <h1>🏆 Hall of Fame PvP</h1>
-    <p>Registro oficial de campeones y récords</p>
+    <p class="subtitle">Dominio, campeones y personalización de tarjetas</p>
     <button class="btn-primary" onclick="openGameModal()">+ Agregar Juego</button>
   </header>
 
@@ -310,10 +370,10 @@
       <input type="hidden" id="editGameId">
       <div class="form-group">
         <label>Nombre del Juego</label>
-        <input type="text" id="inputTitle" placeholder="Ej. Mario Party">
+        <input type="text" id="inputTitle" placeholder="Ej. Mario Kart 8">
       </div>
       <div class="form-group">
-        <label>URL del dibujo del Trofeo</label>
+        <label>URL del Trofeo</label>
         <input type="text" id="inputTrophy" placeholder="Ej. https://i.imgur.com/tu_imagen.png">
       </div>
       <div class="form-group">
@@ -321,12 +381,11 @@
         <input type="text" id="inputChampion" placeholder="Ej. Juan">
       </div>
       <div class="form-group">
-        <label>Historial Inicial (Ej: Juan: 5, Pedro: 3)</label>
-        <input type="text" id="inputHistory" placeholder="Juan: 5, Pedro: 3">
-      </div>
-      <div class="form-group">
-        <label>Récord Destacado</label>
-        <textarea id="inputRecord" rows="2" placeholder="Ej. 10 Estrellas acumuladas por Juan"></textarea>
+        <label>Color de la Tarjeta</label>
+        <div class="color-picker-wrapper">
+          <input type="color" id="inputColor" value="#ffca28">
+          <span style="color: #aaa; font-size: 0.85rem;">Elige el estilo inicial</span>
+        </div>
       </div>
       <div class="modal-actions">
         <button class="btn-secondary" onclick="closeGameModal()">Cancelar</button>
@@ -339,22 +398,30 @@
   <div class="modal" id="winModal">
     <div class="modal-content">
       <h2 style="color: var(--accent-color); margin-top:0;">🏆 Registrar Victoria</h2>
-      <p id="winGameTitle" style="color: #aaa; margin-top: -10px; font-size: 0.9rem;"></p>
+      <p id="winGameTitle" style="color: #aaa; margin-top: -10px; font-size: 0.85rem;"></p>
       <input type="hidden" id="winGameId">
       
       <div class="form-group">
         <label>¿Quién ganó la reta?</label>
         <input type="text" id="winPlayerName" placeholder="Escribe el nombre del ganador">
       </div>
+
+      <div class="form-group">
+        <label>🎨 Elige tu Color de Campeón</label>
+        <div class="color-picker-wrapper">
+          <input type="color" id="winColor" value="#ffca28">
+          <span style="color: #aaa; font-size: 0.85rem;">Aduéñate de la tarjeta con tu color</span>
+        </div>
+      </div>
       
       <div class="form-group">
-        <label>Nuevo Récord o Momento Destacado (Opcional)</label>
-        <textarea id="winRecordText" rows="2" placeholder="Ej. Le ganó en el último segundo con 1 HP"></textarea>
+        <label>Récord o Momento Destacado</label>
+        <textarea id="winRecordText" rows="2" placeholder="Ej. Victoria dramática en el último segundo"></textarea>
       </div>
 
       <div class="modal-actions">
         <button class="btn-secondary" onclick="closeWinModal()">Cancelar</button>
-        <button class="btn-primary" id="btnSaveWin" onclick="processWinner()">🚀 Confirmar Victoria</button>
+        <button class="btn-primary" id="btnSaveWin" onclick="processWinner()">🚀 Reclamar Trono</button>
       </div>
     </div>
   </div>
@@ -365,6 +432,15 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let currentGamesData = [];
+
+    // Convertir Hexadecimal a RGBA para el efecto de resplandor (Glow)
+    function hexToRgba(hex, alpha) {
+      if (!hex) return `rgba(255, 202, 40, ${alpha})`;
+      let r = parseInt(hex.slice(1, 3), 16) || 255;
+      let g = parseInt(hex.slice(3, 5), 16) || 202;
+      let b = parseInt(hex.slice(5, 7), 16) || 40;
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
 
     async function loadGames() {
       const grid = document.getElementById('cardsGrid');
@@ -391,13 +467,15 @@
 
       currentGamesData.forEach(game => {
         const historyList = Array.isArray(game.history) ? game.history : [];
-        
+        const themeColor = game.color || '#ffca28';
+        const themeGlow = hexToRgba(themeColor, 0.4);
+
         const cardHtml = `
           <div class="card-container">
             <div class="card" id="card-${game.id}">
               
               <!-- FRENTE -->
-              <div class="card-face">
+              <div class="card-face" style="--theme-color: ${themeColor}; --theme-glow: ${themeGlow};">
                 <h2 class="game-title">${game.title}</h2>
                 <div class="trophy-container" onclick="toggleFlip('${game.id}')">
                   <img src="${game.trophy || 'https://via.placeholder.com/150/FFD700/000000?text=TROFEO'}" alt="Trofeo" class="trophy-img" onerror="this.src='https://via.placeholder.com/150/FFD700/000000?text=TROFEO'">
@@ -409,15 +487,20 @@
 
                 <div class="card-actions">
                   <button class="btn-action btn-win" onclick="openWinModal('${game.id}')">🏆 Victoria</button>
-                  <button class="btn-action btn-flip" onclick="toggleFlip('${game.id}')">🔄 Ver Info</button>
+                  <button class="btn-action btn-flip" onclick="toggleFlip('${game.id}')">🔄 Info</button>
                 </div>
               </div>
 
               <!-- REVERSO -->
-              <div class="card-face card-back">
+              <div class="card-face card-back" style="--theme-color: ${themeColor}; --theme-glow: ${themeGlow};">
                 <div class="back-title">Historial de Victorias</div>
                 <ul class="stats-list">
-                  ${historyList.map(item => `<li class="stats-item"><span>${item.name}</span> <strong>${item.wins} victorias</strong></li>`).join('')}
+                  ${historyList.map((item, idx) => `
+                    <li class="stats-item">
+                      <span>${idx === 0 ? '👑 ' : ''}${item.name}</span>
+                      <strong>${item.wins} victor.</strong>
+                    </li>
+                  `).join('')}
                 </ul>
 
                 <div class="back-title">Récord Memorable</div>
@@ -443,15 +526,14 @@
       if (card) card.classList.toggle('flipped');
     }
 
-    /* Modal Nuevo/Editar Juego */
+    /* Modal Nuevo Juego */
     function openGameModal() {
       document.getElementById('modalTitle').innerText = 'Nuevo Juego';
       document.getElementById('editGameId').value = '';
       document.getElementById('inputTitle').value = '';
       document.getElementById('inputTrophy').value = '';
       document.getElementById('inputChampion').value = '';
-      document.getElementById('inputHistory').value = '';
-      document.getElementById('inputRecord').value = '';
+      document.getElementById('inputColor').value = '#ffca28';
       document.getElementById('gameModal').style.display = 'flex';
     }
 
@@ -464,8 +546,7 @@
       const title = document.getElementById('inputTitle').value;
       const trophy = document.getElementById('inputTrophy').value;
       const champion = document.getElementById('inputChampion').value;
-      const historyRaw = document.getElementById('inputHistory').value;
-      const record = document.getElementById('inputRecord').value;
+      const color = document.getElementById('inputColor').value;
 
       if (!title) return alert('Por favor escribe el nombre del juego');
 
@@ -473,11 +554,8 @@
       btnSave.disabled = true;
 
       let history = [];
-      if (historyRaw) {
-        history = historyRaw.split(',').map(item => {
-          const [name, wins] = item.split(':');
-          return { name: name ? name.trim() : 'Jugador', wins: wins ? parseInt(wins.trim()) || 0 : 0 };
-        });
+      if (champion) {
+        history.push({ name: champion, wins: 1 });
       }
 
       const { error } = await supabaseClient
@@ -487,7 +565,7 @@
           trophy: trophy || 'https://via.placeholder.com/150/FFD700/000000?text=TROFEO',
           champion: champion || 'Por definir',
           history,
-          record
+          color
         }]);
 
       btnSave.innerText = 'Guardar';
@@ -502,7 +580,7 @@
       }
     }
 
-    /* Modal Registrar Victoria Automática */
+    /* Modal Registrar Victoria */
     function openWinModal(id) {
       const game = currentGamesData.find(g => g.id === id);
       if (!game) return;
@@ -510,6 +588,7 @@
       document.getElementById('winGameId').value = id;
       document.getElementById('winGameTitle').innerText = `Juego: ${game.title}`;
       document.getElementById('winPlayerName').value = '';
+      document.getElementById('winColor').value = game.color || '#ffca28';
       document.getElementById('winRecordText').value = game.record || '';
       document.getElementById('winModal').style.display = 'flex';
     }
@@ -521,6 +600,7 @@
     async function processWinner() {
       const id = document.getElementById('winGameId').value;
       const winnerName = document.getElementById('winPlayerName').value.trim();
+      const chosenColor = document.getElementById('winColor').value;
       const newRecord = document.getElementById('winRecordText').value.trim();
       const btnSaveWin = document.getElementById('btnSaveWin');
 
@@ -532,7 +612,7 @@
       const game = currentGamesData.find(g => g.id === id);
       let history = Array.isArray(game.history) ? [...game.history] : [];
 
-      // Buscar si el jugador ya está en el historial
+      // Buscar si el jugador ya existe en el historial
       const playerIndex = history.findIndex(h => h.name.toLowerCase() === winnerName.toLowerCase());
 
       if (playerIndex >= 0) {
@@ -541,20 +621,21 @@
         history.push({ name: winnerName, wins: 1 });
       }
 
-      // Ordenar historial por número de victorias (de mayor a menor)
+      // Ordenar por número de victorias
       history.sort((a, b) => b.wins - a.wins);
 
-      // Actualizar en Supabase
+      // Actualizar en Supabase (incluyendo el nuevo color elegido)
       const { error } = await supabaseClient
         .from('pvp_cards')
         .update({
           champion: winnerName,
           history: history,
-          record: newRecord
+          record: newRecord,
+          color: chosenColor
         })
         .eq('id', id);
 
-      btnSaveWin.innerText = '🚀 Confirmar Victoria';
+      btnSaveWin.innerText = '🚀 Reclamar Trono';
       btnSaveWin.disabled = false;
 
       if (error) {
