@@ -292,6 +292,8 @@
       max-width: 400px;
       border: 1px solid #333;
       box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+      max-height: 90vh;
+      overflow-y: auto;
     }
 
     .form-group {
@@ -380,6 +382,10 @@
       <div class="form-group">
         <label>Campeón Actual</label>
         <input type="text" id="inputChampion" placeholder="Ej. Juan">
+      </div>
+      <div class="form-group">
+        <label>Récord o Momento Memorable</label>
+        <textarea id="inputRecord" rows="2" placeholder="Ej. Remontada épica en la última vuelta"></textarea>
       </div>
       <div class="form-group">
         <label>Color de la Tarjeta</label>
@@ -537,6 +543,7 @@
         document.getElementById('inputTitle').value = game.title;
         document.getElementById('inputTrophy').value = game.trophy || '';
         document.getElementById('inputChampion').value = game.champion || '';
+        document.getElementById('inputRecord').value = game.record || '';
         document.getElementById('inputColor').value = game.color || '#ffca28';
       } else {
         document.getElementById('modalTitle').innerText = 'Nuevo Juego';
@@ -544,6 +551,7 @@
         document.getElementById('inputTitle').value = '';
         document.getElementById('inputTrophy').value = '';
         document.getElementById('inputChampion').value = '';
+        document.getElementById('inputRecord').value = '';
         document.getElementById('inputColor').value = '#ffca28';
       }
       document.getElementById('gameModal').style.display = 'flex';
@@ -559,6 +567,7 @@
       const title = document.getElementById('inputTitle').value.trim();
       const trophy = document.getElementById('inputTrophy').value.trim();
       const champion = document.getElementById('inputChampion').value.trim();
+      const record = document.getElementById('inputRecord').value.trim();
       const color = document.getElementById('inputColor').value;
 
       if (!title) return alert('Por favor escribe el nombre del juego');
@@ -574,6 +583,7 @@
             title,
             trophy: trophy || 'https://via.placeholder.com/150/FFD700/000000?text=TROFEO',
             champion: champion || 'Sin definir',
+            record,
             color
           })
           .eq('id', editId);
@@ -601,6 +611,7 @@
             title,
             trophy: trophy || 'https://via.placeholder.com/150/FFD700/000000?text=TROFEO',
             champion: champion || 'Sin definir',
+            record,
             history,
             color
           }]);
