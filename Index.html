@@ -608,31 +608,35 @@
       });
     }
 
-    async function createPlayer() {
-      const nameInput = document.getElementById('newPlayerName');
-      const avatarInput = document.getElementById('newPlayerAvatar');
-      
-      const name = nameInput.value.trim();
-      const avatar = avatarInput.value.trim();
+async function createPlayer() {
+  const nameInput = document.getElementById('newPlayerName');
+  const avatarInput = document.getElementById('newPlayerAvatar');
+  
+  const name = nameInput.value.trim();
+  const avatar = avatarInput.value.trim();
 
-      if (!name) return alert('Ingresa el nombre del jugador.');
+  if (!name) return alert('Ingresa el nombre del jugador.');
 
-      const { error } = await supabaseClient
-        .from('players')
-        .insert([{
-          name,
-          avatar: avatar || 'https://via.placeholder.com/150/FFD700/000000?text=USER'
-        }]);
+  // Creamos el objeto asegurando que no envíe cadenas vacías raras
+  const newPlayerData = {
+    name: name,
+    avatar: avatar || 'https://via.placeholder.com/150/FFD700/000000?text=USER'
+  };
 
-      if (error) {
-        alert('Error al crear jugador');
-      } else {
-        nameInput.value = '';
-        avatarInput.value = '';
-        await loadPlayers();
-        await loadGames();
-      }
-    }
+  const { data, error } = await supabaseClient
+    .from('players')
+    .insert([newPlayerData]);
+
+  if (error) {
+    console.error('Detalle del error de Supabase:', error);
+    alert(`Error de Supabase: ${error.message} (${error.details || error.hint || ''})`);
+  } else {
+    nameInput.value = '';
+    avatarInput.value = '';
+    await loadPlayers();
+    await loadGames();
+  }
+}
 
     async function deletePlayer(id) {
       if (!confirm('¿Seguro que quieres eliminar este jugador?')) return;
