@@ -617,10 +617,10 @@ async function createPlayer() {
 
   if (!name) return alert('Ingresa el nombre del jugador.');
 
-  // Creamos el objeto asegurando que no envíe cadenas vacías raras
+  // Cambiamos "avatar" por "avatar_url" para que coincida con tu base de datos
   const newPlayerData = {
     name: name,
-    avatar: avatar || 'https://via.placeholder.com/150/FFD700/000000?text=USER'
+    avatar_url: avatar || 'https://via.placeholder.com/150/FFD700/000000?text=USER'
   };
 
   const { data, error } = await supabaseClient
@@ -629,7 +629,7 @@ async function createPlayer() {
 
   if (error) {
     console.error('Detalle del error de Supabase:', error);
-    alert(`Error de Supabase: ${error.message} (${error.details || error.hint || ''})`);
+    alert(`Error de Supabase: ${error.message}`);
   } else {
     nameInput.value = '';
     avatarInput.value = '';
