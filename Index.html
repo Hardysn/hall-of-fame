@@ -3,336 +3,203 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hall of Fame - Retas PvP</title>
+  <title>Torneo PvP - Dashboard</title>
   
-  <!-- Cargar librería de Supabase -->
+  <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root {
-      --bg-color: #0a0a0f;
-      --accent-color: #ffca28;
-      --text-color: #ffffff;
+      --bg-color: #0f0f18;
+      --card-bg: #1a1a27;
+      --accent-gold: #ffca28;
+      --accent-blue: #0288d1;
+      --text-main: #ffffff;
+      --text-muted: #a0a0b0;
+      --border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     body {
       background-color: var(--bg-color);
-      background-image: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #0a0a0f 75%);
-      color: var(--text-color);
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      margin: 0;
+      color: var(--text-main);
       padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
     }
 
+    /* HEADER Y CONTROLES */
     header {
-      text-align: center;
-      margin-bottom: 35px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+      flex-wrap: wrap;
+      gap: 15px;
     }
 
     h1 {
-      color: #fff;
-      font-size: 2.5rem;
-      margin-bottom: 5px;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      text-shadow: 0 0 15px rgba(255, 202, 40, 0.5);
-    }
-
-    .subtitle {
-      color: #8a8a9e;
-      font-size: 1rem;
-      margin-top: 0;
-      margin-bottom: 20px;
-    }
-
-    .header-buttons {
-      display: flex;
-      gap: 15px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #ffca28, #f57c00);
-      color: #000;
-      border: none;
-      padding: 12px 24px;
-      font-weight: 800;
-      border-radius: 30px;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(255, 202, 40, 0.4);
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px) scale(1.05);
-      box-shadow: 0 6px 20px rgba(255, 202, 40, 0.6);
-    }
-
-    .btn-secondary-head {
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      padding: 12px 24px;
-      font-weight: 800;
-      border-radius: 30px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .btn-secondary-head:hover {
-      background: rgba(255, 255, 255, 0.25);
-      transform: translateY(-2px);
-    }
-
-    .cards-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 35px;
-      justify-content: center;
-      max-width: 1200px;
-      width: 100%;
-    }
-
-    .card-container {
-      width: 300px;
-      height: 480px;
-      perspective: 1000px;
-    }
-
-    .card {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      transform-style: preserve-3d;
-      transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      border-radius: 20px;
-    }
-
-    .card.flipped {
-      transform: rotateY(180deg);
-    }
-
-    .card-face {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      backface-visibility: hidden;
-      border-radius: 20px;
-      box-sizing: border-box;
-      padding: 22px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
-      background: #14141d;
-      border: 2px solid var(--theme-color, #ffca28);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 15px var(--theme-glow, rgba(255,202,40,0.3));
-    }
-
-    .game-title {
-      font-size: 1.4rem;
-      font-weight: 900;
-      text-transform: uppercase;
-      color: var(--theme-color, #ffca28);
-      margin: 0;
-      text-align: center;
-      text-shadow: 0 0 10px var(--theme-glow, rgba(255,202,40,0.4));
-      letter-spacing: 1px;
-    }
-
-    .trophy-container {
-      width: 150px;
-      height: 150px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      position: relative;
-    }
-
-    .trophy-img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-      filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
-      transition: transform 0.3s ease;
-    }
-
-    .trophy-container:hover .trophy-img {
-      transform: scale(1.08) rotate(-3deg);
-    }
-
-    .champion-box {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--theme-color, #ffca28);
-      border-radius: 12px;
-      width: 100%;
-      padding: 12px;
-      text-align: center;
-      box-sizing: border-box;
-      backdrop-filter: blur(5px);
-      box-shadow: inset 0 0 10px var(--theme-glow, rgba(255,202,40,0.1));
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .champion-avatar {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-top: 6px;
-      border: 2px solid var(--theme-color, #ffca28);
-    }
-
-    .champion-label {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      color: #aaa;
-      letter-spacing: 1.5px;
-      font-weight: 700;
-    }
-
-    .champion-name {
-      font-size: 1.2rem;
-      font-weight: 900;
-      color: #fff;
-      margin-top: 4px;
-      text-shadow: 0 2px 5px rgba(0,0,0,0.8);
-    }
-
-    .card-actions {
-      display: flex;
-      gap: 8px;
-      width: 100%;
+      font-size: 1.8rem;
+      color: var(--accent-gold);
     }
 
     .btn-action {
-      flex: 1;
-      padding: 10px 5px;
-      font-size: 0.8rem;
-      font-weight: 800;
+      background: var(--accent-gold);
+      color: #000;
       border: none;
+      padding: 10px 18px;
       border-radius: 8px;
+      font-weight: bold;
       cursor: pointer;
-      text-align: center;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      transition: all 0.2s ease;
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .btn-action:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.1);
+    }
+
+    .btn-secondary {
+      background: #333348;
+      color: white;
     }
 
     .btn-win {
-      background: var(--theme-color, #ffca28);
-      color: #000;
-      box-shadow: 0 4px 10px var(--theme-glow, rgba(255,202,40,0.3));
+      background: #2e7d32;
+      color: white;
     }
 
-    .btn-win:hover {
-      transform: translateY(-2px);
-      filter: brightness(1.15);
+    /* SECCIÓN DE JUGADORES */
+    .section-title {
+      font-size: 1.2rem;
+      margin-bottom: 12px;
+      color: var(--text-muted);
     }
 
-    .btn-flip {
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .btn-flip:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    /* REVERSO */
-    .card-back {
-      transform: rotateY(180deg);
-      align-items: flex-start;
-      overflow-y: auto;
-    }
-
-    .back-title {
-      font-size: 0.85rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      color: var(--theme-color, #ffca28);
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      width: 100%;
-      padding-bottom: 6px;
-      margin-top: 6px;
-      margin-bottom: 8px;
-      letter-spacing: 1px;
-    }
-
-    .stats-list {
-      width: 100%;
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      max-height: 120px;
-      overflow-y: auto;
-    }
-
-    .stats-item {
+    .players-bar {
       display: flex;
-      justify-content: space-between;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 25px;
+    }
+
+    .player-card-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 8px 14px;
+      border-radius: 30px;
+      display: flex;
       align-items: center;
-      padding: 5px 0;
-      font-size: 0.85rem;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      gap: 10px;
+      min-width: max-content;
+      transition: border-color 0.2s;
     }
 
-    .stats-item:first-child {
-      color: var(--theme-color, #ffca28);
-      font-weight: bold;
+    .player-card-item:hover {
+      border-color: var(--accent-gold);
     }
 
-    .records-box {
+    .player-avatar-small {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--accent-gold);
+    }
+
+    /* GRID DE JUEGOS */
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .game-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .game-banner {
       width: 100%;
-      background: rgba(0,0,0,0.4);
+      height: 140px;
+      object-fit: cover;
+      background-color: #252538;
+    }
+
+    .game-content {
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex-grow: 1;
+    }
+
+    .game-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .trophy-img {
+      width: 35px;
+      height: 35px;
+      object-fit: contain;
+    }
+
+    .champion-box {
+      background: rgba(255, 202, 40, 0.1);
+      border: 1px dashed var(--accent-gold);
       padding: 8px;
       border-radius: 8px;
-      box-sizing: border-box;
-      border-left: 3px solid var(--theme-color, #ffca28);
+      text-align: center;
     }
 
-    .record-text {
-      font-size: 0.8rem;
-      color: #ddd;
-      margin: 0;
-      line-height: 1.3;
+    .champion-name {
+      color: var(--accent-gold);
+      font-weight: bold;
+      font-size: 1.1rem;
     }
 
-    /* Modales */
-    .modal {
-      display: none;
+    /* MODALES GENERALES */
+    .modal-overlay {
       position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.85);
-      backdrop-filter: blur(8px);
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 100;
+      z-index: 1000;
     }
 
     .modal-content {
-      background: #14141d;
-      padding: 25px;
-      border-radius: 16px;
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
       width: 90%;
-      max-width: 450px;
-      border: 1px solid #333;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.9);
-      max-height: 90vh;
-      overflow-y: auto;
+      max-width: 500px;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 12px; right: 15px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      cursor: pointer;
     }
 
     .form-group {
@@ -341,236 +208,273 @@
 
     .form-group label {
       display: block;
-      font-size: 0.8rem;
-      margin-bottom: 6px;
-      color: #aaa;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-weight: 700;
+      margin-bottom: 5px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
     }
 
-    .form-group input, .form-group textarea, .form-group select {
+    .form-control {
       width: 100%;
       padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #333;
-      background: #0a0a0f;
+      border-radius: 6px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border-color);
+      color: white;
+    }
+
+    /* ESTILOS DE LA TARJETA ID DE JUGADOR */
+    .player-id-card {
+      background: linear-gradient(145deg, #1e1e2f, #12121c);
+      border: 2px solid var(--accent-gold);
+      border-radius: 16px;
+      box-shadow: 0 0 20px rgba(255, 202, 40, 0.3);
+      max-width: 420px;
+      width: 90%;
+    }
+
+    .id-header {
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+
+    .id-badge {
+      background: var(--accent-gold);
+      color: #000;
+      font-size: 0.65rem;
+      font-weight: 900;
+      padding: 2px 8px;
+      border-radius: 4px;
+      letter-spacing: 1.5px;
+    }
+
+    .id-header h3 {
+      margin: 8px 0 0 0;
+      font-size: 1.4rem;
       color: #fff;
-      box-sizing: border-box;
-      font-size: 0.9rem;
     }
 
-    .color-picker-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .color-picker-wrapper input[type="color"] {
-      width: 45px;
-      height: 45px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      background: transparent;
-    }
-
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .btn-secondary {
-      background: #333;
-      color: #fff;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 700;
-    }
-
-    /* Lista de Jugadores */
-    .players-list {
+    .id-body {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin-top: 15px;
-      max-height: 200px;
-      overflow-y: auto;
+      align-items: center;
+      gap: 15px;
     }
 
-    .player-card-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(255,255,255,0.05);
-      padding: 8px 12px;
+    .id-avatar-img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--accent-gold);
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    .id-trophies-section {
+      width: 100%;
+    }
+
+    .id-trophies-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 10px;
+      max-height: 180px;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    .id-trophy-item {
+      background: rgba(255, 255, 255, 0.05);
       border-radius: 8px;
+      padding: 8px;
+      text-align: center;
       border: 1px solid rgba(255,255,255,0.1);
     }
 
-    .player-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    .id-trophy-img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
     }
 
-    .player-avatar-small {
-      width: 35px;
-      height: 35px;
-      border-radius: 50%;
-      object-fit: cover;
+    .id-trophy-count {
+      font-size: 0.75rem;
+      font-weight: bold;
+      color: var(--accent-gold);
+      margin-top: 4px;
+    }
+
+    .id-actions {
+      margin-top: 15px;
+      display: flex;
+      justify-content: center;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>🏆 Hall of Fame PvP</h1>
-    <p class="subtitle">Dominio, campeones y personalización de tarjetas</p>
-    <div class="header-buttons">
-      <button class="btn-primary" onclick="openGameModal()">+ Agregar Juego</button>
-      <button class="btn-secondary-head" onclick="openPlayersModal()">👥 Jugadores Activos</button>
+    <h1>🏆 Torneo PvP</h1>
+    <div style="display: flex; gap: 10px;">
+      <button class="btn-action btn-secondary" onclick="openAddPlayerModal()">+ Agregar Jugador</button>
+      <button class="btn-action" onclick="openAddGameModal()">+ Agregar Juego</button>
     </div>
   </header>
 
-  <main class="cards-grid" id="cardsGrid">
-    <p style="color: #aaa;">Cargando tarjetas desde la nube...</p>
-  </main>
+  <!-- JUGADORES -->
+  <h2 class="section-title">JUGADORES REGISTRADOS (Haz clic para ver ID)</h2>
+  <div id="playersListContainer" class="players-bar">
+    <p style="color: #aaa; font-size: 0.85rem;">Cargando jugadores...</p>
+  </div>
 
-  <!-- Modal para Agregar/Editar Juego -->
-  <div class="modal" id="gameModal">
+  <!-- TARJETAS DE JUEGOS -->
+  <h2 class="section-title">TARJETAS DE JUEGOS</h2>
+  <div id="gamesGridContainer" class="games-grid">
+    <p style="color: #aaa; font-size: 0.85rem;">Cargando juegos...</p>
+  </div>
+
+  <!-- MODAL: AGREGAR JUGADOR -->
+  <div class="modal-overlay" id="addPlayerModal" style="display:none;">
     <div class="modal-content">
-      <h2 style="color: var(--accent-color); margin-top:0;" id="modalTitle">Nuevo Juego</h2>
-      <input type="hidden" id="editGameId">
-      <div class="form-group">
-        <label>Nombre del Juego</label>
-        <input type="text" id="inputTitle" placeholder="Ej. Mario Kart 8">
+      <button class="modal-close" onclick="closeAddPlayerModal()">✕</button>
+      <h3>Registrar Nuevo Jugador</h3>
+      <div class="form-group" style="margin-top: 15px;">
+        <label>Nombre del Jugador</label>
+        <input type="text" id="newPlayerNameInput" class="form-control" placeholder="Ej: Alex">
       </div>
       <div class="form-group">
-        <label>URL de la Imagen / Trofeo</label>
-        <input type="text" id="inputTrophy" placeholder="Ej. https://i.imgur.com/tu_imagen.png">
+        <label>URL o Nombre de Archivo de Avatar</label>
+        <input type="text" id="newPlayerAvatarInput" class="form-control" placeholder="Ej: alex.jpg o https://...">
+      </div>
+      <button class="btn-action" onclick="saveNewPlayer()" style="width: 100%; margin-top: 10px;">Guardar Jugador</button>
+    </div>
+  </div>
+
+  <!-- MODAL: AGREGAR JUEGO -->
+  <div class="modal-overlay" id="addGameModal" style="display:none;">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeAddGameModal()">✕</button>
+      <h3>Agregar Nuevo Juego</h3>
+      <div class="form-group" style="margin-top: 15px;">
+        <label>Título del Juego</label>
+        <input type="text" id="newGameTitleInput" class="form-control" placeholder="Ej: Street Fighter VI">
       </div>
       <div class="form-group">
-        <label>Campeón Actual</label>
-        <select id="selectChampionGame">
-          <option value="">-- Selecciona Jugador --</option>
-        </select>
+        <label>URL o Nombre de Archivo de la Portada/Banner</label>
+        <input type="text" id="newGameBannerInput" class="form-control" placeholder="Ej: sf6.png o https://...">
       </div>
       <div class="form-group">
-        <label>Récord o Momento Memorable</label>
-        <textarea id="inputRecord" rows="2" placeholder="Ej. Remontada épica en la última vuelta"></textarea>
+        <label>URL o Nombre de Archivo del Trofeo</label>
+        <input type="text" id="newGameTrophyInput" class="form-control" placeholder="Ej: trophy.png o https://...">
       </div>
-      <div class="form-group">
-        <label>Color de la Tarjeta</label>
-        <div class="color-picker-wrapper">
-          <input type="color" id="inputColor" value="#ffca28">
-          <span style="color: #aaa; font-size: 0.85rem;">Estilo visual</span>
+      <button class="btn-action" onclick="saveNewGame()" style="width: 100%; margin-top: 10px;">Guardar Juego</button>
+    </div>
+  </div>
+
+  <!-- MODAL: ID / PERFIL DE JUGADOR -->
+  <div class="modal-overlay" id="playerProfileModal" style="display:none;">
+    <div class="modal-content player-id-card">
+      <button class="modal-close" onclick="closePlayerProfileModal()">✕</button>
+      
+      <div class="id-header">
+        <span class="id-badge">PLAYER ID</span>
+        <h3 id="idPlayerName">Nombre del Jugador</h3>
+      </div>
+
+      <div class="id-body">
+        <div class="id-avatar-container">
+          <img id="idPlayerAvatar" src="" alt="Avatar" class="id-avatar-img">
+        </div>
+        
+        <div class="id-trophies-section">
+          <h4 style="margin-bottom: 8px; color: var(--accent-gold); font-size: 0.9rem;">🏆 TROFEOS OBTENIDOS</h4>
+          <div id="idPlayerTrophies" class="id-trophies-grid">
+            <!-- Cargado dinámicamente -->
+          </div>
         </div>
       </div>
-      <div class="modal-actions">
-        <button class="btn-secondary" onclick="closeGameModal()">Cancelar</button>
-        <button class="btn-primary" id="btnSave" onclick="saveGame()">Guardar</button>
+
+      <div class="id-actions">
+        <button class="btn-action" onclick="openEditPlayerModal()" style="background: var(--accent-blue); color: white;">✏️ Editar Perfil</button>
       </div>
     </div>
   </div>
 
-  <!-- Modal para Registrar Ganador -->
-  <div class="modal" id="winModal">
+  <!-- MODAL: EDITAR JUGADOR -->
+  <div class="modal-overlay" id="editPlayerModal" style="display:none;">
     <div class="modal-content">
-      <h2 style="color: var(--accent-color); margin-top:0;">🏆 Registrar Victoria</h2>
-      <p id="winGameTitle" style="color: #aaa; margin-top: -10px; font-size: 0.85rem;"></p>
-      <input type="hidden" id="winGameId">
+      <h3>Editar Jugador</h3>
+      <input type="hidden" id="editPlayerId">
       
+      <div class="form-group" style="margin-top: 15px;">
+        <label>Nombre</label>
+        <input type="text" id="editPlayerNameInput" class="form-control">
+      </div>
       <div class="form-group">
-        <label>¿Quién ganó la reta?</label>
-        <select id="winPlayerSelect">
-          <option value="">-- Selecciona Ganador --</option>
-        </select>
+        <label>URL / Archivo de Avatar</label>
+        <input type="text" id="editPlayerAvatarInput" class="form-control">
       </div>
 
-      <div class="form-group">
-        <label>🎨 Elige tu Color de Campeón</label>
-        <div class="color-picker-wrapper">
-          <input type="color" id="winColor" value="#ffca28">
-          <span style="color: #aaa; font-size: 0.85rem;">Personaliza tu tarjeta</span>
-        </div>
-      </div>
-      
-      <div class="form-group">
-        <label>Récord o Momento Destacado</label>
-        <textarea id="winRecordText" rows="2" placeholder="Ej. Victoria dramática en el último segundo"></textarea>
-      </div>
-
-      <div class="modal-actions">
-        <button class="btn-secondary" onclick="closeWinModal()">Cancelar</button>
-        <button class="btn-primary" id="btnSaveWin" onclick="processWinner()">🚀 Reclamar Trono</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal de Jugadores Activos -->
-  <div class="modal" id="playersModal">
-    <div class="modal-content">
-      <h2 style="color: var(--accent-color); margin-top:0;">👥 Jugadores Activos</h2>
-      
-      <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; border: 1px solid #222;">
-        <h4 style="margin: 0 0 10px 0; color: #fff;">Agregar Nuevo Jugador</h4>
-        <div class="form-group">
-          <input type="text" id="newPlayerName" placeholder="Nombre o Apodo">
-        </div>
-        <div class="form-group">
-          <input type="text" id="newPlayerAvatar" placeholder="URL del Avatar/Foto (Opcional)">
-        </div>
-        <button class="btn-primary" style="width: 100%;" onclick="createPlayer()">+ Crear Jugador</button>
-      </div>
-
-      <h4 style="margin: 15px 0 5px 0; color: #aaa;">Directorio de Jugadores</h4>
-      <div class="players-list" id="playersListContainer">
-        <p style="color: #666; font-size: 0.85rem;">Cargando jugadores...</p>
-      </div>
-
-      <div class="modal-actions">
-        <button class="btn-secondary" onclick="closePlayersModal()">Cerrar</button>
+      <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:15px;">
+        <button class="btn-action btn-secondary" onclick="closeEditPlayerModal()">Cancelar</button>
+        <button class="btn-action btn-win" onclick="savePlayerChanges()">Guardar</button>
       </div>
     </div>
   </div>
 
   <script>
-    const SUPABASE_URL = 'https://fzqwqjobubwccaiyoqrg.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6cXdxam9idWJ3Y2NhaXlvcXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg1MzE2MDIsImV4cCI6MjEwNDEwNzYwMn0.AEE6KK2uRsKx4YoLD_uPU-jkx2w9Enz8ZQcq9pPPpwg';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // ----------------------------------------------------
+    // CONFIGURACIÓN DE SUPABASE
+    // (Asegúrate de colocar tus credenciales)
+    // ----------------------------------------------------
+    const SUPABASE_URL = 'https://TU-PROYECTO.supabase.co';
+    const SUPABASE_ANON_KEY = 'TU-ANON-KEY';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    let currentGamesData = [];
+    // BUCKET DE IMÁGENES (Opcional, si usas Supabase Storage)
+    const STORAGE_BUCKET = 'pvp-images';
+
+    // VARIABLES GLOBALES
     let currentPlayersData = [];
+    let currentGamesData = [];
+    let selectedPlayerForId = null;
 
-    function hexToRgba(hex, alpha) {
-      if (!hex) return `rgba(255, 202, 40, ${alpha})`;
-      let r = parseInt(hex.slice(1, 3), 16) || 255;
-      let g = parseInt(hex.slice(3, 5), 16) || 202;
-      let b = parseInt(hex.slice(5, 7), 16) || 40;
-      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    // Helper para formatear URLs de imágenes
+    function getImageUrl(path) {
+      if (!path) return '';
+      if (path.startsWith('http://') || path.startsWith('https://')) {
+        return path;
+      }
+      return `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${path}`;
     }
 
+    // ----------------------------------------------------
+    // CARGAR DATOS DESDE SUPABASE
+    // ----------------------------------------------------
     async function loadPlayers() {
-      const { data, error } = await supabaseClient
-        .from('players')
-        .select('*')
-        .order('name', { ascending: true });
-
+      const { data, error } = await supabaseClient.from('players').select('*');
       if (error) {
         console.error('Error al cargar jugadores:', error);
         return;
       }
-
       currentPlayersData = data || [];
       renderPlayersList();
-      populatePlayerDropdowns();
     }
 
+    async function loadGames() {
+      const { data, error } = await supabaseClient.from('pvp_cards').select('*');
+      if (error) {
+        console.error('Error al cargar juegos:', error);
+        return;
+      }
+      currentGamesData = data || [];
+      renderGamesGrid();
+    }
+
+    // ----------------------------------------------------
+    // RENDERIZADO
+    // ----------------------------------------------------
     function renderPlayersList() {
       const container = document.getElementById('playersListContainer');
       if (!container) return;
@@ -580,357 +484,236 @@
         return;
       }
 
-      container.innerHTML = currentPlayersData.map(p => `
-        <div class="player-card-item">
-          <div class="player-info">
-            <img src="${p.avatar_url || 'https://via.placeholder.com/150/FFD700/000000?text=USER'}" class="player-avatar-small" onerror="this.src='https://via.placeholder.com/150/FFD700/000000?text=USER'">
-            <span style="font-weight: 700;">${p.name}</span>
+      container.innerHTML = currentPlayersData.map(p => {
+        const avatarSrc = getImageUrl(p.avatar_url) || 'https://via.placeholder.com/150/FFD700/000000?text=USER';
+        return `
+          <div class="player-card-item">
+            <div class="player-info" onclick="openPlayerProfileModal('${p.id}')" style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+              <img src="${avatarSrc}" class="player-avatar-small" onerror="this.src='https://via.placeholder.com/150/FFD700/000000?text=USER'">
+              <span style="font-weight: 700;">${p.name}</span>
+            </div>
+            <button onclick="deletePlayer('${p.id}')" style="background: none; border: none; color: #ff5555; cursor: pointer; margin-left: 5px;">🗑️</button>
           </div>
-          <button onclick="deletePlayer('${p.id}')" style="background: none; border: none; color: #ff5555; cursor: pointer;">🗑️</button>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
-    function populatePlayerDropdowns() {
-      const selects = [document.getElementById('selectChampionGame'), document.getElementById('winPlayerSelect')];
-      
-      selects.forEach(select => {
-        if (!select) return;
-        const currentVal = select.value;
-        select.innerHTML = '<option value="">-- Selecciona Jugador --</option>';
-        currentPlayersData.forEach(p => {
-          const opt = document.createElement('option');
-          opt.value = p.name;
-          opt.textContent = p.name;
-          select.appendChild(opt);
-        });
-        select.value = currentVal;
+    function renderGamesGrid() {
+      const container = document.getElementById('gamesGridContainer');
+      if (!container) return;
+
+      if (currentGamesData.length === 0) {
+        container.innerHTML = '<p style="color: #aaa; font-size: 0.85rem;">No hay tarjetas de juegos registradas.</p>';
+        return;
+      }
+
+      container.innerHTML = currentGamesData.map(g => {
+        const bannerSrc = getImageUrl(g.banner) || 'https://via.placeholder.com/400x150/1a1a27/FFFFFF?text=PVP+GAME';
+        const trophySrc = getImageUrl(g.trophy) || 'https://via.placeholder.com/100/FFD700/000000?text=TROFEO';
+        
+        return `
+          <div class="game-card">
+            <img src="${bannerSrc}" class="game-banner" onerror="this.src='https://via.placeholder.com/400x150/1a1a27/FFFFFF?text=PVP+GAME'">
+            <div class="game-content">
+              <div class="game-header">
+                <h3>${g.title}</h3>
+                <img src="${trophySrc}" class="trophy-img" onerror="this.src='https://via.placeholder.com/100/FFD700/000000?text=TROFEO'">
+              </div>
+              <div class="champion-box">
+                <div style="font-size: 0.75rem; color: #a0a0b0;">CAMPEÓN ACTUAL</div>
+                <div class="champion-name">${g.champion || 'Sin Campeón'}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ----------------------------------------------------
+    // LÓGICA DE ID / PERFIL Y EDICIÓN DE JUGADOR
+    // ----------------------------------------------------
+    function openPlayerProfileModal(playerId) {
+      const player = currentPlayersData.find(p => p.id === playerId);
+      if (!player) return;
+
+      selectedPlayerForId = player;
+
+      document.getElementById('idPlayerName').innerText = player.name;
+      document.getElementById('idPlayerAvatar').src = getImageUrl(player.avatar_url) || 'https://via.placeholder.com/150/FFD700/000000?text=USER';
+
+      // Buscar todos los trofeos ganados en el historial de los juegos
+      const trophiesContainer = document.getElementById('idPlayerTrophies');
+      let playerTrophies = [];
+
+      currentGamesData.forEach(game => {
+        const history = Array.isArray(game.history) ? game.history : [];
+        const record = history.find(h => h.name && h.name.toLowerCase() === player.name.toLowerCase());
+        
+        if (record && record.wins > 0) {
+          playerTrophies.push({
+            gameTitle: game.title,
+            trophyImg: getImageUrl(game.trophy),
+            wins: record.wins
+          });
+        }
       });
+
+      if (playerTrophies.length === 0) {
+        trophiesContainer.innerHTML = '<p style="color: #aaa; font-size: 0.8rem; grid-column: 1/-1;">Aún no ha registrado victorias.</p>';
+      } else {
+        trophiesContainer.innerHTML = playerTrophies.map(t => `
+          <div class="id-trophy-item">
+            <img src="${t.trophyImg || 'https://via.placeholder.com/150/FFD700/000000?text=TROFEO'}" class="id-trophy-img" title="${t.gameTitle}">
+            <div style="font-size: 0.7rem; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${t.gameTitle}</div>
+            <div class="id-trophy-count">🏆 x${t.wins}</div>
+          </div>
+        `).join('');
+      }
+
+      document.getElementById('playerProfileModal').style.display = 'flex';
     }
 
-async function createPlayer() {
-  const nameInput = document.getElementById('newPlayerName');
-  const avatarInput = document.getElementById('newPlayerAvatar');
-  
-  const name = nameInput.value.trim();
-  const avatar = avatarInput.value.trim();
+    function closePlayerProfileModal() {
+      document.getElementById('playerProfileModal').style.display = 'none';
+    }
 
-  if (!name) return alert('Ingresa el nombre del jugador.');
-
-  // Cambiamos "avatar" por "avatar_url" para que coincida con tu base de datos
-  const newPlayerData = {
-    name: name,
-    avatar_url: avatar || 'https://via.placeholder.com/150/FFD700/000000?text=USER'
-  };
-
-  const { data, error } = await supabaseClient
-    .from('players')
-    .insert([newPlayerData]);
-
-  if (error) {
-    console.error('Detalle del error de Supabase:', error);
-    alert(`Error de Supabase: ${error.message}`);
-  } else {
-    nameInput.value = '';
-    avatarInput.value = '';
-    await loadPlayers();
-    await loadGames();
-  }
-}
-
-    async function deletePlayer(id) {
-      if (!confirm('¿Seguro que quieres eliminar este jugador?')) return;
+    function openEditPlayerModal() {
+      if (!selectedPlayerForId) return;
       
+      document.getElementById('editPlayerId').value = selectedPlayerForId.id;
+      document.getElementById('editPlayerNameInput').value = selectedPlayerForId.name;
+      document.getElementById('editPlayerAvatarInput').value = selectedPlayerForId.avatar_url || '';
+      
+      document.getElementById('editPlayerModal').style.display = 'flex';
+    }
+
+    function closeEditPlayerModal() {
+      document.getElementById('editPlayerModal').style.display = 'none';
+    }
+
+    async function savePlayerChanges() {
+      const id = document.getElementById('editPlayerId').value;
+      const newName = document.getElementById('editPlayerNameInput').value.trim();
+      const newAvatar = document.getElementById('editPlayerAvatarInput').value.trim();
+
+      if (!newName) return alert('El nombre no puede estar vacío.');
+
+      const oldName = selectedPlayerForId ? selectedPlayerForId.name : null;
+
       const { error } = await supabaseClient
         .from('players')
-        .delete()
+        .update({ name: newName, avatar_url: newAvatar })
         .eq('id', id);
 
-      if (error) alert('Error al eliminar jugador');
-      else {
+      if (error) {
+        console.error('Error al actualizar jugador:', error);
+        alert('Hubo un error al actualizar el jugador.');
+        return;
+      }
+
+      // Si el nombre cambió, actualizarlo en las tarjetas pvp_cards (campeones e historiales)
+      if (oldName && oldName !== newName) {
+        for (let game of currentGamesData) {
+          let updated = false;
+          let newChampion = game.champion;
+          let newHistory = Array.isArray(game.history) ? [...game.history] : [];
+
+          if (game.champion && game.champion.toLowerCase() === oldName.toLowerCase()) {
+            newChampion = newName;
+            updated = true;
+          }
+
+          newHistory = newHistory.map(h => {
+            if (h.name && h.name.toLowerCase() === oldName.toLowerCase()) {
+              updated = true;
+              return { ...h, name: newName };
+            }
+            return h;
+          });
+
+          if (updated) {
+            await supabaseClient
+              .from('pvp_cards')
+              .update({ champion: newChampion, history: newHistory })
+              .eq('id', game.id);
+          }
+        }
+      }
+
+      closeEditPlayerModal();
+      closePlayerProfileModal();
+      await loadPlayers();
+      await loadGames();
+    }
+
+    async function deletePlayer(id) {
+      if (!confirm('¿Seguro que deseas eliminar este jugador?')) return;
+      const { error } = await supabaseClient.from('players').delete().eq('id', id);
+      if (error) {
+        console.error('Error al eliminar jugador:', error);
+        alert('Error al eliminar el jugador.');
+      } else {
         await loadPlayers();
+      }
+    }
+
+    // ----------------------------------------------------
+    // AGREGAR JUGADOR / JUEGO
+    // ----------------------------------------------------
+    function openAddPlayerModal() { document.getElementById('addPlayerModal').style.display = 'flex'; }
+    function closeAddPlayerModal() { document.getElementById('addPlayerModal').style.display = 'none'; }
+    function openAddGameModal() { document.getElementById('addGameModal').style.display = 'flex'; }
+    function closeAddGameModal() { document.getElementById('addGameModal').style.display = 'none'; }
+
+    async function saveNewPlayer() {
+      const name = document.getElementById('newPlayerNameInput').value.trim();
+      const avatar_url = document.getElementById('newPlayerAvatarInput').value.trim();
+
+      if (!name) return alert('Por favor escribe un nombre.');
+
+      const { error } = await supabaseClient.from('players').insert([{ name, avatar_url }]);
+      if (error) {
+        console.error('Error al crear jugador:', error);
+        alert('Hubo un error al guardar el jugador.');
+      } else {
+        document.getElementById('newPlayerNameInput').value = '';
+        document.getElementById('newPlayerAvatarInput').value = '';
+        closeAddPlayerModal();
+        await loadPlayers();
+      }
+    }
+
+    async function saveNewGame() {
+      const title = document.getElementById('newGameTitleInput').value.trim();
+      const banner = document.getElementById('newGameBannerInput').value.trim();
+      const trophy = document.getElementById('newGameTrophyInput').value.trim();
+
+      if (!title) return alert('Por favor escribe un título.');
+
+      const { error } = await supabaseClient.from('pvp_cards').insert([{
+        title,
+        banner,
+        trophy,
+        champion: null,
+        history: []
+      }]);
+
+      if (error) {
+        console.error('Error al crear juego:', error);
+        alert('Hubo un error al guardar el juego.');
+      } else {
+        document.getElementById('newGameTitleInput').value = '';
+        document.getElementById('newGameBannerInput').value = '';
+        document.getElementById('newGameTrophyInput').value = '';
+        closeAddGameModal();
         await loadGames();
       }
     }
 
-    async function loadGames() {
-      const grid = document.getElementById('cardsGrid');
-      if (!grid) return;
-      
-      const { data, error } = await supabaseClient
-        .from('pvp_cards')
-        .select('*')
-        .order('created_at', { ascending: true });
-
-      if (error) {
-        console.error('Error al cargar juegos:', error);
-        grid.innerHTML = '<p style="color: #ff5555;">Error al cargar las tarjetas desde la nube.</p>';
-        return;
-      }
-
-      currentGamesData = data || [];
-
-      if (currentGamesData.length === 0) {
-        grid.innerHTML = '<p style="color: #aaa;">No hay tarjetas creadas aún. ¡Haz clic en "+ Agregar Juego"!</p>';
-        return;
-      }
-
-      grid.innerHTML = '';
-
-      currentGamesData.forEach(game => {
-        const historyList = Array.isArray(game.history) ? game.history : [];
-        const themeColor = game.color || '#ffca28';
-        const themeGlow = hexToRgba(themeColor, 0.4);
-
-        // Buscar avatar del campeón actual
-        const champObj = currentPlayersData.find(p => p.name.toLowerCase() === (game.champion || '').toLowerCase());
-        const champAvatar = champObj ? champObj.avatar_url : null;
-
-        const cardHtml = `
-          <div class="card-container">
-            <div class="card" id="card-${game.id}">
-              
-              <!-- FRENTE -->
-              <div class="card-face" style="--theme-color: ${themeColor}; --theme-glow: ${themeGlow};">
-                <h2 class="game-title">${game.title}</h2>
-                <div class="trophy-container" onclick="toggleFlip('${game.id}')">
-                  <img src="${game.trophy || 'https://via.placeholder.com/150/FFD700/000000?text=TROFEO'}" alt="Trofeo" class="trophy-img" onerror="this.src='https://via.placeholder.com/150/FFD700/000000?text=TROFEO'">
-                </div>
-                <div class="champion-box">
-                  <div class="champion-label">Campeón Actual</div>
-                  ${champAvatar ? `<img src="${champAvatar}" class="champion-avatar" onerror="this.style.display='none'">` : ''}
-                  <div class="champion-name">👑 ${game.champion || 'Sin definir'}</div>
-                </div>
-
-                <div class="card-actions">
-                  <button class="btn-action btn-win" onclick="openWinModal('${game.id}')">🏆 Victoria</button>
-                  <button class="btn-action btn-flip" onclick="toggleFlip('${game.id}')">🔄 Info</button>
-                </div>
-              </div>
-
-              <!-- REVERSO -->
-              <div class="card-face card-back" style="--theme-color: ${themeColor}; --theme-glow: ${themeGlow};">
-                <div class="back-title">Historial de Victorias</div>
-                <ul class="stats-list">
-                  ${historyList.map((item, idx) => `
-                    <li class="stats-item">
-                      <span>${idx === 0 ? '👑 ' : ''}${item.name}</span>
-                      <strong>${item.wins} victor.</strong>
-                    </li>
-                  `).join('')}
-                </ul>
-
-                <div class="back-title">Récord Memorable</div>
-                <div class="records-box">
-                  <p class="record-text">${game.record || 'Sin récords registrados aún'}</p>
-                </div>
-
-                <div class="card-actions" style="margin-top: auto;">
-                  <button class="btn-action btn-flip" onclick="openGameModal('${game.id}')" style="background:#0288d1; color:#fff;">⚙️ Editar</button>
-                  <button class="btn-action btn-secondary" onclick="deleteGame('${game.id}')" style="background:#c62828;">🗑️</button>
-                  <button class="btn-action btn-flip" onclick="toggleFlip('${game.id}')">🔄 Voltear</button>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        `;
-        grid.innerHTML += cardHtml;
-      });
-    }
-
-    function toggleFlip(id) {
-      const card = document.getElementById(`card-${id}`);
-      if (card) card.classList.toggle('flipped');
-    }
-
-    function openPlayersModal() {
-      document.getElementById('playersModal').style.display = 'flex';
-    }
-
-    function closePlayersModal() {
-      document.getElementById('playersModal').style.display = 'none';
-    }
-
-    /* Modal Abrir (Crear o Editar) */
-    function openGameModal(editId = null) {
-      populatePlayerDropdowns();
-      if (editId) {
-        const game = currentGamesData.find(g => g.id === editId);
-        if (!game) return;
-        document.getElementById('modalTitle').innerText = 'Editar Tarjeta';
-        document.getElementById('editGameId').value = game.id;
-        document.getElementById('inputTitle').value = game.title;
-        document.getElementById('inputTrophy').value = game.trophy || '';
-        document.getElementById('selectChampionGame').value = game.champion || '';
-        document.getElementById('inputRecord').value = game.record || '';
-        document.getElementById('inputColor').value = game.color || '#ffca28';
-      } else {
-        document.getElementById('modalTitle').innerText = 'Nuevo Juego';
-        document.getElementById('editGameId').value = '';
-        document.getElementById('inputTitle').value = '';
-        document.getElementById('inputTrophy').value = '';
-        document.getElementById('selectChampionGame').value = '';
-        document.getElementById('inputRecord').value = '';
-        document.getElementById('inputColor').value = '#ffca28';
-      }
-      document.getElementById('gameModal').style.display = 'flex';
-    }
-
-    function closeGameModal() {
-      document.getElementById('gameModal').style.display = 'none';
-    }
-
-    async function saveGame() {
-      const editId = document.getElementById('editGameId').value;
-      const btnSave = document.getElementById('btnSave');
-      const title = document.getElementById('inputTitle').value.trim();
-      const trophy = document.getElementById('inputTrophy').value.trim();
-      const champion = document.getElementById('selectChampionGame').value;
-      const record = document.getElementById('inputRecord').value.trim();
-      const color = document.getElementById('inputColor').value;
-
-      if (!title) return alert('Por favor escribe el nombre del juego');
-
-      btnSave.innerText = 'Guardando...';
-      btnSave.disabled = true;
-
-      if (editId) {
-        const { error } = await supabaseClient
-          .from('pvp_cards')
-          .update({
-            title,
-            trophy: trophy || 'https://via.placeholder.com/150/FFD700/000000?text=TROFEO',
-            champion: champion || 'Sin definir',
-            record,
-            color
-          })
-          .eq('id', editId);
-
-        btnSave.innerText = 'Guardar';
-        btnSave.disabled = false;
-
-        if (error) {
-          console.error('Error al editar:', error);
-          alert('Hubo un error al guardar los cambios.');
-        } else {
-          closeGameModal();
-          loadGames();
-        }
-      } else {
-        let history = [];
-        if (champion) {
-          history.push({ name: champion, wins: 1 });
-        }
-
-        const { error } = await supabaseClient
-          .from('pvp_cards')
-          .insert([{
-            title,
-            trophy: trophy || 'https://via.placeholder.com/150/FFD700/000000?text=TROFEO',
-            champion: champion || 'Sin definir',
-            record,
-            history,
-            color
-          }]);
-
-        btnSave.innerText = 'Guardar';
-        btnSave.disabled = false;
-
-        if (error) {
-          console.error('Error al guardar:', error);
-          alert('Hubo un error al crear la tarjeta.');
-        } else {
-          closeGameModal();
-          loadGames();
-        }
-      }
-    }
-
-    /* Modal Registrar Victoria */
-    function openWinModal(id) {
-      populatePlayerDropdowns();
-      const game = currentGamesData.find(g => g.id === id);
-      if (!game) return;
-
-      document.getElementById('winGameId').value = id;
-      document.getElementById('winGameTitle').innerText = `Juego: ${game.title}`;
-      document.getElementById('winPlayerSelect').value = '';
-      document.getElementById('winColor').value = game.color || '#ffca28';
-      document.getElementById('winRecordText').value = game.record || '';
-      document.getElementById('winModal').style.display = 'flex';
-    }
-
-    function closeWinModal() {
-      document.getElementById('winModal').style.display = 'none';
-    }
-
-    async function processWinner() {
-      const id = document.getElementById('winGameId').value;
-      const winnerName = document.getElementById('winPlayerSelect').value;
-      const chosenColor = document.getElementById('winColor').value;
-      const newRecord = document.getElementById('winRecordText').value.trim();
-      const btnSaveWin = document.getElementById('btnSaveWin');
-
-      if (!winnerName) return alert('Por favor selecciona el ganador.');
-
-      btnSaveWin.innerText = 'Actualizando...';
-      btnSaveWin.disabled = true;
-
-      const game = currentGamesData.find(g => g.id === id);
-      let history = Array.isArray(game.history) ? [...game.history] : [];
-
-      const playerIndex = history.findIndex(h => h.name.toLowerCase() === winnerName.toLowerCase());
-
-      if (playerIndex >= 0) {
-        history[playerIndex].wins = (parseInt(history[playerIndex].wins) || 0) + 1;
-      } else {
-        history.push({ name: winnerName, wins: 1 });
-      }
-
-      history.sort((a, b) => b.wins - a.wins);
-
-      const { error } = await supabaseClient
-        .from('pvp_cards')
-        .update({
-          champion: winnerName,
-          history: history,
-          record: newRecord,
-          color: chosenColor
-        })
-        .eq('id', id);
-
-      btnSaveWin.innerText = '🚀 Reclamar Trono';
-      btnSaveWin.disabled = false;
-
-      if (error) {
-        console.error('Error al actualizar victoria:', error);
-        alert('Hubo un error al actualizar la victoria.');
-      } else {
-        closeWinModal();
-        loadGames();
-      }
-    }
-
-    async function deleteGame(id) {
-      if (!confirm('¿Seguro que quieres eliminar esta tarjeta?')) return;
-
-      const { error } = await supabaseClient
-        .from('pvp_cards')
-        .delete()
-        .eq('id', id);
-
-      if (error) {
-        alert('Error al eliminar');
-      } else {
-        loadGames();
-      }
-    }
-
-    // Carga inicial secuencial segura al cargar el DOM
-    document.addEventListener('DOMContentLoaded', async () => {
-      await loadPlayers();
-      await loadGames();
+    // Inicializar datos al cargar la página
+    window.addEventListener('DOMContentLoaded', () => {
+      loadPlayers();
+      loadGames();
     });
   </script>
 </body>
