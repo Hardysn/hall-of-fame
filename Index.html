@@ -583,7 +583,7 @@
       container.innerHTML = currentPlayersData.map(p => `
         <div class="player-card-item">
           <div class="player-info">
-            <img src="${p.avatar || 'https://via.placeholder.com/150/FFD700/000000?text=USER'}" class="player-avatar-small" onerror="this.src='https://via.placeholder.com/150/FFD700/000000?text=USER'">
+            <img src="${p.avatar_url || 'https://via.placeholder.com/150/FFD700/000000?text=USER'}" class="player-avatar-small" onerror="this.src='https://via.placeholder.com/150/FFD700/000000?text=USER'">
             <span style="font-weight: 700;">${p.name}</span>
           </div>
           <button onclick="deletePlayer('${p.id}')" style="background: none; border: none; color: #ff5555; cursor: pointer;">🗑️</button>
@@ -684,7 +684,7 @@ async function createPlayer() {
 
         // Buscar avatar del campeón actual
         const champObj = currentPlayersData.find(p => p.name.toLowerCase() === (game.champion || '').toLowerCase());
-        const champAvatar = champObj ? champObj.avatar : null;
+        const champAvatar = champObj ? champObj.avatar_url : null;
 
         const cardHtml = `
           <div class="card-container">
