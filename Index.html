@@ -573,6 +573,8 @@
 
     function renderPlayersList() {
       const container = document.getElementById('playersListContainer');
+      if (!container) return;
+
       if (currentPlayersData.length === 0) {
         container.innerHTML = '<p style="color: #aaa; font-size: 0.85rem;">No hay jugadores registrados aún.</p>';
         return;
@@ -593,6 +595,7 @@
       const selects = [document.getElementById('selectChampionGame'), document.getElementById('winPlayerSelect')];
       
       selects.forEach(select => {
+        if (!select) return;
         const currentVal = select.value;
         select.innerHTML = '<option value="">-- Selecciona Jugador --</option>';
         currentPlayersData.forEach(p => {
@@ -627,6 +630,7 @@
         nameInput.value = '';
         avatarInput.value = '';
         await loadPlayers();
+        await loadGames();
       }
     }
 
@@ -639,11 +643,15 @@
         .eq('id', id);
 
       if (error) alert('Error al eliminar jugador');
-      else loadPlayers();
+      else {
+        await loadPlayers();
+        await loadGames();
+      }
     }
 
     async function loadGames() {
       const grid = document.getElementById('cardsGrid');
+      if (!grid) return;
       
       const { data, error } = await supabaseClient
         .from('pvp_cards')
@@ -915,11 +923,11 @@
       }
     }
 
-    // Inicializar datos
-    (async () => {
+    // Carga inicial secuencial segura al cargar el DOM
+    document.addEventListener('DOMContentLoaded', async () => {
       await loadPlayers();
       await loadGames();
-    })();
+    });
   </script>
 </body>
 </html>
